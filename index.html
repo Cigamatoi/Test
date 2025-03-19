@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
+            background: radial-gradient(circle at top left, #1A1A2E, #0F0F1A);
             color: #FFFFFF;
             display: flex;
             flex-direction: column;
@@ -17,6 +17,8 @@
             margin: 0;
             padding: 20px;
             overflow-x: hidden;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-mosaic.png');
+            cursor: url('https://raw.githubusercontent.com/Cigamatoi/Test/refs/heads/main/BANHAMMER.JPG') 40 40, auto;
         }
         header {
             text-align: center;
@@ -26,9 +28,15 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 3.5rem;
             color: #00D4FF;
-            text-shadow: 0 0 15px #00D4FF, 0 0 30px #00D4FF;
+            text-shadow: 0 0 25px #00D4FF, 0 0 50px #00D4FF;
             margin: 0;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: flicker 1.5s infinite alternate;
+        }
+        @keyframes flicker {
+            0% {opacity: 1; text-shadow: 0 0 25px #00D4FF, 0 0 50px #00D4FF;}
+            100% {opacity: 0.8; text-shadow: 0 0 5px #00D4FF, 0 0 10px #00D4FF;}
         }
         #countdown {
             font-family: 'Orbitron', sans-serif;
@@ -44,33 +52,33 @@
             padding: 6px;
             margin: 20px 0;
             border: 2px solid #00D4FF;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
             position: relative;
             overflow: hidden;
         }
         #progress-bar {
             width: 0%;
             height: 24px;
-            background: #00D4FF;
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
             border-radius: 8px;
             transition: width 1s linear;
-            box-shadow: 0 0 10px #00D4FF;
+            box-shadow: 0 0 15px #00D4FF;
         }
         #frog {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             position: absolute;
             top: -8px;
             left: 0;
             color: #00D4FF;
-            text-shadow: 0 0 5px #00D4FF;
+            text-shadow: 0 0 8px #00D4FF;
             transition: left 1s linear;
         }
         #message {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             margin: 15px 0;
             color: #E0E0E0;
             display: none;
-            text-shadow: 0 0 5px #00D4FF;
+            text-shadow: 0 0 8px #00D4FF;
         }
         #image {
             display: none;
@@ -78,10 +86,51 @@
             max-width: 500px;
             border-radius: 12px;
             border: 2px solid #00D4FF;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.7);
         }
 
-        /* Whack-a-Mole Fix */
+        #nickname-section, #game-buttons, #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
+            background: linear-gradient(145deg, #16213E, #1A1A2E);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #00D4FF;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4), 0 8px 25px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 600px;
+            margin: 20px 0;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s;
+        }
+        #nickname-section:hover, #game-buttons:hover, #quiz-container:hover, #memory-container:hover, #whack-a-mole-container:hover, #snake-container:hover, #flappy-frog-container:hover, #full-ranking-container:hover, #top-10-container:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.7);
+        }
+        button {
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            color: #1A1A2E;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.2s, box-shadow 0.3s;
+            margin: 10px;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.6);
+        }
+        .option:hover {
+            background-color: #00D4FF;
+            transform: scale(1.05);
+            color: #1A1A2E;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        /* Whack-a-Mole Cursor & Animation */
         #whack-a-mole-container {
             position: relative;
             cursor: none;
@@ -97,7 +146,21 @@
             transform: translate(-50%, -50%) rotate(0deg);
             transition: transform 0.1s ease, opacity 0.2s;
         }
-        /* Restlicher CSS bleibt gleich */
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #00D4FF; }
+            50% { box-shadow: 0 0 20px #00D4FF; }
+            100% { box-shadow: 0 0 5px #00D4FF; }
+        }
+
+        /* Add glowing animation */
+        #progress-container, #nickname-section, #game-buttons {
+            animation: glow 2s infinite;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -105,11 +168,9 @@
         <h1>Ciga Ma Toi</h1>
     </header>
 
-    <!-- Dein kompletter Body-Inhalt bleibt gleich -->
+    <!-- Dein kompletter Body-Inhalt und Script bleibt gleich! -->
 
     <script>
-        // Dein kompletter bisheriger JS-Code bleibt gleich...
-
         // --- Whack-a-Mole Hammer Fix ---
         const hammer = document.getElementById("hammer");
         const whackContainer = document.getElementById("whack-a-mole-container");
@@ -153,7 +214,7 @@
                 drawSnakeGame();
             }, 100);
         }
-        // --- Restlicher JS bleibt gleich ---
+        // --- Dein restlicher JS-Code bleibt unverändert! ---
     </script>
 </body>
 </html>
