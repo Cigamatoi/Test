@@ -397,13 +397,13 @@
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                countdownElement.textContent = ${days}d ${hours}h ${minutes}m ${seconds}s;
+                countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
                 const progress = (1 - timeLeft / totalTime) * 100;
-                progressBar.style.width = ${progress}%;
+                progressBar.style.width = `${progress}%`;
 
                 const frogPosition = (progress / 100) * (progressContainer.offsetWidth - frog.offsetWidth);
-                frog.style.left = ${frogPosition}px;
+                frog.style.left = `${frogPosition}px`;
             }
         }
 
@@ -555,7 +555,7 @@
                 feedbackElement.style.color = "#90E0EF";
                 quizScore++;
             } else {
-                feedbackElement.textContent = Wrong! The correct answer was: ${currentQuestion.options[currentQuestion.correct]};
+                feedbackElement.textContent = `Wrong! The correct answer was: ${currentQuestion.options[currentQuestion.correct]}`;
                 feedbackElement.style.color = "#FF6B6B";
             }
             document.getElementById("next-btn").style.display = "block";
@@ -572,7 +572,7 @@
             } else {
                 document.getElementById("quiz-container").style.display = "none";
                 document.getElementById("score").style.display = "block";
-                document.getElementById("score").textContent = Quiz Score: ${quizScore}/${questions.length};
+                document.getElementById("score").textContent = `Quiz Score: ${quizScore}/${questions.length}`;
                 saveScore("quiz", quizScore);
                 updateTop10();
             }
@@ -610,7 +610,7 @@
             flippedCards = [];
             matchedPairs = 0;
             memoryScore = 0;
-            document.getElementById("memory-score").textContent = Moves: ${memoryScore};
+            document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
 
             const cardsToUse = [...memoryImages, ...memoryImages];
             cardsToUse.sort(() => Math.random() - 0.5);
@@ -621,7 +621,7 @@
                     const cardElement = document.createElement("div");
                     cardElement.classList.add("memory-card");
                     cardElement.dataset.id = card.id;
-                    cardElement.innerHTML = <img src="${card.src}" alt="${card.name}">;
+                    cardElement.innerHTML = `<img src="${card.src}" alt="${card.name}">`;
                     cardElement.addEventListener("click", () => flipCard(cardElement));
                     memoryGame.appendChild(cardElement);
                     memoryCards.push(cardElement);
@@ -634,7 +634,7 @@
                 card.classList.add("flipped");
                 flippedCards.push(card);
                 memoryScore++;
-                document.getElementById("memory-score").textContent = Moves: ${memoryScore};
+                document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
 
                 if (flippedCards.length === 2) {
                     setTimeout(checkMatch, 1000);
@@ -652,7 +652,7 @@
                     setTimeout(() => {
                         document.getElementById("memory-container").style.display = "none";
                         document.getElementById("score").style.display = "block";
-                        document.getElementById("score").textContent = Memory Moves: ${memoryScore};
+                        document.getElementById("score").textContent = `Memory Moves: ${memoryScore}`;
                         saveScore("memory", memoryScore);
                         updateTop10();
                     }, 500);
@@ -678,14 +678,14 @@
             whackGame.innerHTML = "";
             whackScore = 0;
             whackTimer = 30;
-            document.getElementById("whack-a-mole-score").textContent = Score: ${whackScore};
-            document.getElementById("whack-a-mole-timer").textContent = Time: ${whackTimer}s;
+            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
 
             for (let i = 0; i < 16; i++) {
                 const hole = document.createElement("div");
                 hole.classList.add("mole-hole");
                 hole.dataset.index = i;
-                hole.innerHTML = <img src="${targetImage}" class="target" alt="Head">;
+                hole.innerHTML = `<img src="${targetImage}" class="target" alt="Head">`;
                 hole.addEventListener("click", (e) => whackMole(e, hole));
                 whackGame.appendChild(hole);
             }
@@ -700,13 +700,13 @@
                     whackGameActive = false;
                     document.getElementById("whack-a-mole-container").style.display = "none";
                     document.getElementById("score").style.display = "block";
-                    document.getElementById("score").textContent = Whack-a-Mole Score: ${whackScore};
+                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
                     saveScore("whack-a-mole", whackScore);
                     updateTop10();
                     return;
                 }
                 whackTimer--;
-                document.getElementById("whack-a-mole-timer").textContent = Time: ${whackTimer}s;
+                document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
 
                 const holes = document.getElementsByClassName("mole-hole");
                 for (let hole of holes) {
@@ -726,12 +726,12 @@
         function whackMole(event, hole) {
             if (hole.classList.contains("active") && whackGameActive) {
                 whackScore++;
-                document.getElementById("whack-a-mole-score").textContent = Score: ${whackScore};
+                document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
                 hole.classList.remove("active");
 
                 const rect = hole.getBoundingClientRect();
-                hammer.style.left = ${rect.left - 10}px;
-                hammer.style.top = ${rect.top - 10}px;
+                hammer.style.left = `${rect.left - 10}px`;
+                hammer.style.top = `${rect.top - 10}px`;
                 hammer.style.display = "block";
                 setTimeout(() => {
                     hammer.style.display = "none";
@@ -739,31 +739,6 @@
             }
             event.stopPropagation();
         }
-         <script>
-    // --- Whack-a-Mole Hammer Fix ---
-    document.addEventListener("DOMContentLoaded", function() {
-      const hammer = document.getElementById("hammer");
-      const whackContainer = document.getElementById("whack-a-mole-container");
-
-      if (whackContainer) {
-        whackContainer.addEventListener("mousemove", (e) => {
-          hammer.style.left = `${e.clientX}px`;
-          hammer.style.top = `${e.clientY}px`;
-          hammer.style.display = "block";
-        });
-
-        whackContainer.addEventListener("click", () => {
-          hammer.style.transform = "translate(-50%, -50%) rotate(-45deg) scale(1.2)";
-          setTimeout(() => {
-            hammer.style.transform = "translate(-50%, -50%) rotate(0deg) scale(1)";
-          }, 100);
-        });
-
-        whackContainer.addEventListener("mouseleave", () => {
-          hammer.style.display = "none";
-        });
-      }
-    });
 
         // Snake-Spiel Logik
         const snakeCanvas = document.getElementById("snake-canvas");
@@ -785,7 +760,7 @@
             dy = 0;
             snakeScore = 0;
             snakeGameActive = true;
-            document.getElementById("snake-score").textContent = Score: ${snakeScore};
+            document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.addEventListener("keydown", changeDirection);
             startSnakeGame();
         }
@@ -843,7 +818,7 @@
 
             if (head.x === food.x && head.y === food.y) {
                 snakeScore++;
-                document.getElementById("snake-score").textContent = Score: ${snakeScore};
+                document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
                 spawnFood();
             } else {
                 snake.pop();
@@ -881,7 +856,7 @@
             clearInterval(snakeInterval);
             document.getElementById("snake-container").style.display = "none";
             document.getElementById("score").style.display = "block";
-            document.getElementById("score").textContent = Snake Score: ${snakeScore};
+            document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
             saveScore("snake", snakeScore);
             updateTop10();
         }
@@ -904,7 +879,7 @@
             gameOver = false;
             flappyScore = 0;
             pipes = [];
-            document.getElementById("flappy-frog-score").textContent = Score: ${flappyScore};
+            document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
             document.removeEventListener("keydown", jump);
             document.removeEventListener("click", jump);
             drawFlappyGame();
@@ -920,7 +895,7 @@
                     clearInterval(gameLoop);
                     document.getElementById("flappy-frog-container").style.display = "none";
                     document.getElementById("score").style.display = "block";
-                    document.getElementById("score").textContent = Flappy Frog Score: ${flappyScore};
+                    document.getElementById("score").textContent = `Flappy Frog Score: ${flappyScore}`;
                     saveScore("flappy-frog", flappyScore);
                     updateTop10();
                     return;
@@ -956,7 +931,7 @@
                     }
                     if (flappyCanvas.width / 2 > pipe.x + 50 && flappyCanvas.width / 2 < pipe.x + 60) {
                         flappyScore++;
-                        document.getElementById("flappy-frog-score").textContent = Score: ${flappyScore};
+                        document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
                     }
                 });
 
@@ -1023,15 +998,15 @@
             top10.forEach(entry => {
                 const li = document.createElement("li");
                 if (entry.gameType === "quiz") {
-                    li.textContent = ${entry.nickname}: Quiz - ${entry.score}/${questions.length};
+                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
                 } else if (entry.gameType === "memory") {
-                    li.textContent = ${entry.nickname}: Memory - ${entry.score} moves;
+                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
                 } else if (entry.gameType === "whack-a-mole") {
-                    li.textContent = ${entry.nickname}: Whack-a-Mole - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
                 } else if (entry.gameType === "snake") {
-                    li.textContent = ${entry.nickname}: Snake - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
                 } else if (entry.gameType === "flappy-frog") {
-                    li.textContent = ${entry.nickname}: Flappy Frog - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
                 }
                 top10List.appendChild(li);
             });
@@ -1044,15 +1019,15 @@
             rankings.forEach(entry => {
                 const li = document.createElement("li");
                 if (entry.gameType === "quiz") {
-                    li.textContent = ${entry.nickname}: Quiz - ${entry.score}/${questions.length};
+                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
                 } else if (entry.gameType === "memory") {
-                    li.textContent = ${entry.nickname}: Memory - ${entry.score} moves;
+                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
                 } else if (entry.gameType === "whack-a-mole") {
-                    li.textContent = ${entry.nickname}: Whack-a-Mole - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
                 } else if (entry.gameType === "snake") {
-                    li.textContent = ${entry.nickname}: Snake - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
                 } else if (entry.gameType === "flappy-frog") {
-                    li.textContent = ${entry.nickname}: Flappy Frog - ${entry.score} points;
+                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
                 }
                 fullRankingList.appendChild(li);
             });
