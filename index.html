@@ -411,7 +411,7 @@
         const interval = setInterval(updateCountdown, 1000);
 
         // Nickname-Logik
-        const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit"];
+        const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
 
         function submitNickname() {
             const input = document.getElementById("nickname-input").value.trim();
@@ -433,8 +433,14 @@
             localStorage.setItem("nickname", nickname);
             errorElement.style.display = "none";
             document.getElementById("nickname-section").style.display = "none";
+            
             document.getElementById("game-buttons").style.display = "flex";
             document.getElementById("top-10-container").style.display = "block";
+            document.getElementById("nickname-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        submitNickname();
+    }
+});
         }
 
         window.onload = function() {
@@ -504,7 +510,7 @@
             },
             {
                 question: "What key milestone was achieved with the IOTA Rebased vote in December 2024?",
-                options: ["Approval by all token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"],
+                options: ["Approval by token holders", "Launch of the mainnet", "Removal of all validators", "Increase in transaction fees"],
                 correct: 0
             },
             {
