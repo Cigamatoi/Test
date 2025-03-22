@@ -374,11 +374,11 @@
     </form>
     
     <div id="game-buttons" style="display: none;">
-        <button class="game-button" onclick="showSection('quiz')">Quiz</button>
-        <button class="game-button" onclick="showSection('memory')">Memory</button>
-        <button class="game-button" onclick="showSection('whack-a-mole')">Whack-a-Mole</button>
-        <button class="game-button" onclick="showSection('snake')">Snake</button>
-        <button class="game-button" onclick="showSection('flappy-frog')">Flappy Frog</button>
+        <button class="game-button" >Quiz</button>
+        <button class="game-button" >Memory</button>
+        <button class="game-button" >Whack-a-Mole</button>
+        <button class="game-button" >Snake</button>
+        <button class="game-button" >Flappy Frog</button>
     </div>
 
     <div id="quiz-container" style="display: none;">
@@ -386,14 +386,14 @@
         <div class="options" id="options"></div>
         <div id="feedback"></div>
         <button id="next-btn">Next Question</button>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" >Back</button>
     </div>
     <div id="score"></div>
 
     <div id="memory-container" style="display: none;">
         <div id="memory-game"></div>
         <div id="memory-score"></div>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" >Back</button>
     </div>
 
     
@@ -402,7 +402,7 @@
         <div id="whack-a-mole-score">Score: 0</div>
         <div id="whack-a-mole-timer">Time: 30s</div>
         <div class="custom-cursor" id="custom-cursor"></div>
-        <button class="back-btn" onclick="showSection('main')" id="whack-back-btn" style="margin-top: 20px;">Back</button>
+        <button class="back-btn"  id="whack-back-btn" style="margin-top: 20px;">Back</button>
     </div>
     
 
@@ -410,27 +410,27 @@
     <div id="snake-container" style="display: none;">
         <canvas id="snake-canvas" width="400" height="400"></canvas>
         <div id="snake-score">Score: 0</div>
-        <button class="back-btn" onclick="showSection('main')" id="snake-back-btn">Back</button>
+        <button class="back-btn"  id="snake-back-btn">Back</button>
     
     </div>
 
     <div id="flappy-frog-container" style="display: none;">
         <canvas id="flappy-frog-canvas" width="400" height="600"></canvas>
         <div id="flappy-frog-score">Score: 0</div>
-        <button id="play-button" onclick="startFlappyGame()">Play</button>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button id="play-button" >Play</button>
+        <button class="back-btn" >Back</button>
     </div>
 
     <div id="top-10-container" style="display: none;">
         <h1>Top 10 Players</h1>
         <ol id="top-10-list"></ol>
-        <button class="game-button" onclick="showSection('full-ranking')">Full Leaderboard</button>
+        <button class="game-button" >Full Leaderboard</button>
     </div>
 
     <div id="full-ranking-container" style="display: none;">
         <h1>Full Leaderboard</h1>
         <ol id="full-ranking-list"></ol>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" >Back</button>
     </div>
 
     <script>
@@ -556,23 +556,47 @@
 
         
 
-    document.addEventListener("DOMContentLoaded", function() {
-        console.log("DOM fully loaded");
-        const nicknameForm = document.getElementById("nickname-section");
-        if (nicknameForm) {
-            nicknameForm.addEventListener("submit", submitNickname);
-        }
+    
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOMContentLoaded fully loaded");
 
-        const savedNickname = localStorage.getItem("nickname");
-        if (savedNickname) {
-            nickname = savedNickname;
-            document.getElementById("nickname-section").style.display = "none";
-            document.getElementById("game-buttons").style.display = "flex";
-            document.getElementById("top-10-container").style.display = "block";
-            updateTop10();
-            console.log("Loaded saved nickname:", nickname);
-        }
+    const nicknameForm = document.getElementById("nickname-section");
+    if (nicknameForm) {
+        nicknameForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            submitNickname();
+        });
+    }
+
+    // Game Buttons (Quiz, Memory, etc.)
+    const gameButtons = document.querySelectorAll(".game-button");
+    gameButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const section = button.textContent.trim().toLowerCase().replace(/ /g, "-");
+            showSection(section);
+        });
     });
+
+    // Back Buttons
+    const backButtons = document.querySelectorAll(".back-btn");
+    backButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            showSection("main");
+        });
+    });
+
+    // Saved Nickname check
+    const savedNickname = localStorage.getItem("nickname");
+    if (savedNickname) {
+        nickname = savedNickname;
+        document.getElementById("nickname-section").style.display = "none";
+        document.getElementById("game-buttons").style.display = "flex";
+        document.getElementById("top-10-container").style.display = "block";
+        updateTop10();
+        console.log("Loaded saved nickname:", nickname);
+    }
+});
+
     
     } else {
         console.error("Nickname input not found on DOM load");
