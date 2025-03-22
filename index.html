@@ -366,11 +366,13 @@
     </div>
     <p id="message">REBASED or naked skiing!</p>
     <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
-    <div id="nickname-section">
+    
+    <form id="nickname-section">
         <input type="text" id="nickname-input" placeholder="Enter your nickname..." maxlength="20">
         <div id="nickname-error"></div>
-        <button id="submit-nickname" onclick="submitNickname()">Submit</button>
-    </div>
+        <button id="submit-nickname" type="submit">Submit</button>
+    </form>
+    
     <div id="game-buttons" style="display: none;">
         <button class="game-button" onclick="showSection('quiz')">Quiz</button>
         <button class="game-button" onclick="showSection('memory')">Memory</button>
@@ -482,15 +484,47 @@
 
         const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
 
-        function submitNickname() {
-            console.log("submitNickname called");
-            const input = document.getElementById("nickname-input");
-            const errorElement = document.getElementById("nickname-error");
+        
+    function submitNickname(event) {
+        event.preventDefault();
+        console.log("submitNickname called");
+        const input = document.getElementById("nickname-input");
+        const errorElement = document.getElementById("nickname-error");
 
-            if (!input) {
-                console.error("Nickname input not found");
-                return;
-            }
+        if (!input) {
+            console.error("Nickname input not found");
+            return;
+        }
+
+        const inputValue = input.value.trim();
+        console.log("Nickname entered:", inputValue);
+
+        if (inputValue === "") {
+            errorElement.textContent = "Please enter a nickname.";
+            errorElement.style.display = "block";
+            console.log("Error: Empty nickname");
+            return;
+        }
+
+        const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
+        if (badWords.some(word => inputValue.toLowerCase().includes(word))) {
+            errorElement.textContent = "Please choose a different nickname (inappropriate word detected).";
+            errorElement.style.display = "block";
+            console.log("Error: Inappropriate word detected");
+            return;
+        }
+
+        nickname = inputValue;
+        localStorage.setItem("nickname", nickname);
+        console.log("Nickname saved:", nickname);
+
+        errorElement.style.display = "none";
+        document.getElementById("nickname-section").style.display = "none";
+        document.getElementById("game-buttons").style.display = "flex";
+        document.getElementById("top-10-container").style.display = "block";
+        updateTop10();
+    }
+    
 
             const inputValue = input.value.trim();
             console.log("Nickname entered:", inputValue);
@@ -521,17 +555,25 @@
         }
 
         
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOM fully loaded");
-    const nicknameInput = document.getElementById("nickname-input");
-    if (nicknameInput) {
-        nicknameInput.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                console.log("Enter pressed");
-                submitNickname();
-            }
-        });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        console.log("DOM fully loaded");
+        const nicknameForm = document.getElementById("nickname-section");
+        if (nicknameForm) {
+            nicknameForm.addEventListener("submit", submitNickname);
+        }
+
+        const savedNickname = localStorage.getItem("nickname");
+        if (savedNickname) {
+            nickname = savedNickname;
+            document.getElementById("nickname-section").style.display = "none";
+            document.getElementById("game-buttons").style.display = "flex";
+            document.getElementById("top-10-container").style.display = "block";
+            updateTop10();
+            console.log("Loaded saved nickname:", nickname);
+        }
+    });
+    
     } else {
         console.error("Nickname input not found on DOM load");
     }
