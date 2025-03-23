@@ -35,7 +35,6 @@
             font-size: 2.2rem;
             margin: 15px 0;
             color: #00D4FF;
-            text-shadow: 0 0 10px #00Dieki
             text-shadow: 0 0 5px #00D4FF;
         }
         #progress-container {
@@ -92,6 +91,10 @@
             margin: 20px 0;
             text-align: center;
             transition: transform 0.3s ease;
+        }
+        #memory-container {
+            max-width: 1000px;
+            padding: 25px 60px;
         }
         #game-buttons {
             display: flex;
@@ -179,11 +182,6 @@
             margin-top: 15px;
             font-size: 1.2rem;
             color: #90E0EF;
-        }
-        #memory-container {
-            width: 90%;
-            max-width: 1000px;
-            padding: 25px 60px;
         }
         #memory-game {
             display: grid;
@@ -283,7 +281,7 @@
             50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.1); }
             100% { transform: translate(-50%, -50%) rotate(0deg); }
         }
-        #snake-container {
+        #snake-container, #flappy-frog-container {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -297,7 +295,7 @@
             display: block;
             margin: 0 auto;
         }
-        #snake-back-btn {
+        #snake-back-btn, #memory-back-btn-end {
             display: none;
         }
         #flappy-frog-canvas {
@@ -329,7 +327,6 @@
             margin-left: auto;
             margin-right: auto;
         }
-        /* Tabs für Top-10 */
         .tab-container {
             display: flex;
             justify-content: center;
@@ -453,7 +450,8 @@
     <div id="memory-container" style="display: none;">
         <div id="memory-game"></div>
         <div id="memory-score"></div>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="memory-back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="memory-back-btn-end" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="whack-a-mole-container" style="display: none;">
@@ -461,13 +459,13 @@
         <div id="whack-a-mole-score">Score: 0</div>
         <div id="whack-a-mole-timer">Time: 30s</div>
         <div class="custom-cursor" id="custom-cursor"></div>
-        <button class="back-btn" onclick="showSection('main')" id="whack-back-btn">Back</button>
+        <button class="back-btn" id="whack-back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="snake-container" style="display: none;">
         <canvas id="snake-canvas" width="400" height="400"></canvas>
         <div id="snake-score">Score: 0</div>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="snake-back-btn-during" onclick="showSection('main')">Back</button>
         <button class="back-btn" id="snake-back-btn" onclick="showSection('main')">Back</button>
     </div>
 
@@ -475,7 +473,7 @@
         <canvas id="flappy-frog-canvas" width="400" height="600"></canvas>
         <div id="flappy-frog-score">Score: 0</div>
         <button id="play-button" onclick="startFlappyGame()">Play</button>
-        <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="flappy-back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="top-10-container" style="display: none;">
@@ -582,7 +580,7 @@
             document.getElementById("nickname-section").style.display = "none";
             document.getElementById("game-buttons").style.display = "flex";
             document.getElementById("top-10-container").style.display = "block";
-            showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
+            showTab('quiz');
             console.log("Switched to game selection");
         }
 
@@ -607,7 +605,7 @@
                 document.getElementById("nickname-section").style.display = "none";
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
-                showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
+                showTab('quiz');
                 console.log("Loaded saved nickname:", nickname);
             }
         });
@@ -640,14 +638,7 @@
             optionsElement.innerHTML = "";
             document.getElementById("feedback").style.display = "none";
             document.getElementById("next-btn").style.display = "none";
-
-            currentQuestion.options.forEach((option, index) => {
-                const optionButton = document.createElement("div");
-                optionButton.classList.add("option");
-                optionButton.textContent = option;
-                optionButton.addEventListener("click", () => checkAnswer(index));
-                optionsElement.appendChild(optionButton);
-            });
+            document.getElementById("quiz-container").querySelector(".back-btn").style.display = "block";
         }
 
         function checkAnswer(selectedIndex) {
@@ -714,6 +705,8 @@
             matchedPairs = 0;
             memoryScore = 0;
             document.getElementById("memory-score").textContent = `Moves: ${memoryScore}`;
+            document.getElementById("memory-back-btn").style.display = "block";
+            document.getElementById("memory-back-btn-end").style.display = "none";
 
             const cardsToUse = [...memoryImages, ...memoryImages];
             cardsToUse.sort(() => Math.random() - 0.5);
@@ -753,7 +746,8 @@
                 matchedPairs++;
                 if (matchedPairs === 16) {
                     setTimeout(() => {
-                        document.getElementById("memory-container").style.display = "none";
+                        document.getElementById("memory-back-btn").style.display = "none";
+                        document.getElementById("memory-back-btn-end").style.display = "block";
                         document.getElementById("score").style.display = "block";
                         document.getElementById("score").textContent = `Memory Moves: ${memoryScore}`;
                         saveScore("memory", memoryScore);
@@ -785,6 +779,7 @@
             scoreDisplay.textContent = `Score: ${whackScore}`;
             timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
             customCursor.style.display = "none";
+            document.getElementById("whack-back-btn").style.display = "block";
 
             for (let i = 0; i < 16; i++) {
                 const hole = document.createElement("div");
@@ -866,6 +861,7 @@
                     customCursor.style.display = "none";
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
+                    document.getElementById("whack-back-btn").style.display = "block";
                     saveScore("whack-a-mole", whackScore);
                     updateTop10('whack-a-mole');
                     return;
@@ -923,6 +919,7 @@
             document.getElementById("snake-container").style.display = "flex";
             snakeCanvas.style.display = "block";
             document.getElementById("snake-back-btn").style.display = "none";
+            document.getElementById("snake-back-btn-during").style.display = "block";
             document.addEventListener("keydown", changeDirection);
             drawSnakeGame();
             console.log("Waiting for W, A, S, or D to start");
@@ -1034,6 +1031,7 @@
             document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.getElementById("score").style.display = "block";
             document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
+            document.getElementById("snake-back-btn-during").style.display = "none";
             document.getElementById("snake-back-btn").style.display = "block";
             saveScore("snake", snakeScore);
             updateTop10('snake');
@@ -1058,6 +1056,8 @@
             flappyScore = 0;
             pipes = [];
             document.getElementById("flappy-frog-score").textContent = `Score: ${flappyScore}`;
+            document.getElementById("play-button").style.display = "block";
+            document.getElementById("flappy-back-btn").style.display = "block";
             document.removeEventListener("keydown", jump);
             document.removeEventListener("click", jump);
             drawFlappyGame();
@@ -1066,14 +1066,16 @@
         function startFlappyGame() {
             gameStarted = true;
             document.getElementById("play-button").style.display = "none";
+            document.getElementById("flappy-back-btn").style.display = "block";
             document.addEventListener("keydown", jump);
             document.addEventListener("click", jump);
             const gameLoop = setInterval(() => {
                 if (gameOver) {
                     clearInterval(gameLoop);
-                    document.getElementById("flappy-frog-container").style.display = "none";
+                    document.getElementById("flappy-frog-container").style.display = "block";
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Flappy Frog Score: ${flappyScore}`;
+                    document.getElementById("flappy-back-btn").style.display = "block";
                     saveScore("flappy-frog", flappyScore);
                     updateTop10('flappy-frog');
                     return;
@@ -1145,25 +1147,41 @@
                 flappyCtx.fillRect(pipe.x, 0, 50, pipe.topHeight);
                 flappyCtx.fillRect(pipe.x, flappyCanvas.height - pipe.bottomHeight, 50, pipe.bottomHeight);
             });
+
+            if (gameOver) {
+                flappyCtx.fillStyle = "#FF6B6B";
+                flappyCtx.font = "30px Orbitron";
+                flappyCtx.fillText("Game Over!", flappyCanvas.width / 2 - 80, flappyCanvas.height / 2);
+            }
         }
 
         function saveScore(gameType, gameScore) {
             const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            rankings.push({ nickname, gameType, score: gameScore });
-            rankings.sort((a, b) => {
-                if (a.gameType === "quiz" && b.gameType === "quiz") {
-                    return b.score - a.score;
-                } else if (a.gameType === "memory" && b.gameType === "memory") {
-                    return a.score - b.score;
-                } else if (a.gameType === "whack-a-mole" && b.gameType === "whack-a-mole") {
-                    return b.score - a.score;
-                } else if (a.gameType === "snake" && b.gameType === "snake") {
-                    return b.score - a.score;
-                } else if (a.gameType === "flappy-frog" && b.gameType === "flappy-frog") {
-                    return b.score - a.score;
+            const existingEntryIndex = rankings.findIndex(entry => entry.nickname === nickname && entry.gameType === gameType);
+
+            if (existingEntryIndex !== -1) {
+                if (gameType === "memory") {
+                    if (gameScore < rankings[existingEntryIndex].score) {
+                        rankings[existingEntryIndex].score = gameScore;
+                    }
+                } else {
+                    if (gameScore > rankings[existingEntryIndex].score) {
+                        rankings[existingEntryIndex].score = gameScore;
+                    }
                 }
+            } else {
+                rankings.push({ nickname, gameType, score: gameScore });
+            }
+
+            rankings.sort((a, b) => {
+                if (a.gameType === "quiz" && b.gameType === "quiz") return b.score - a.score;
+                if (a.gameType === "memory" && b.gameType === "memory") return a.score - b.score;
+                if (a.gameType === "whack-a-mole" && b.gameType === "whack-a-mole") return b.score - a.score;
+                if (a.gameType === "snake" && b.gameType === "snake") return b.score - a.score;
+                if (a.gameType === "flappy-frog" && b.gameType === "flappy-frog") return b.score - a.score;
                 return 0;
             });
+
             localStorage.setItem("rankings", JSON.stringify(rankings));
         }
 
@@ -1244,7 +1262,7 @@
                 }
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
-                showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
+                showTab('quiz');
             } else if (section === "quiz") {
                 document.getElementById("quiz-container").style.display = "block";
                 currentQuestionIndex = 0;
