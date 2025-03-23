@@ -266,7 +266,7 @@
             display: none;
         }
         .custom-cursor.hammer-hit {
-            animation: hammerSwing 0.3s ease-out;
+            animation: hammerSwing 0.2s ease-out;
         }
         @keyframes hammerSwing {
             0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
@@ -701,100 +701,109 @@
         }
 
         let whackScore = 0;
-        let whackTimer = 30;
+        let whackTimeLeft = 30;
         let whackGameActive = false;
-        let whackInterval = null;
+        let whackGameLoop = null;
+        let moleTimeout = null;
 
         function initWhackAMole() {
             console.log("Initializing Whack-a-Mole");
             const whackGame = document.getElementById("whack-a-mole-game");
+            const scoreDisplay = document.getElementById("whack-a-mole-score");
+            const timerDisplay = document.getElementById("whack-a-mole-timer");
             const customCursor = document.getElementById("custom-cursor");
             whackGame.innerHTML = "";
             whackScore = 0;
-            whackTimer = 30;
+            whackTimeLeft = 30;
             whackGameActive = false;
-            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+            scoreDisplay.textContent = `Score: ${whackScore}`;
+            timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
             customCursor.style.display = "none";
 
+            // Löcher erstellen
             for (let i = 0; i < 16; i++) {
                 const hole = document.createElement("div");
                 hole.classList.add("mole-hole");
-                hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Head">';
+                hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Mole">';
                 hole.addEventListener("click", (e) => whackMole(e, hole));
                 whackGame.appendChild(hole);
             }
 
-            function handleMouseMove(e) {
+            // Hammer-Cursor
+            function moveHammer(e) {
                 const rect = whackGame.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 customCursor.style.left = `${x}px`;
                 customCursor.style.top = `${y}px`;
-                customCursor.style.display = "block";
+                if (whackGameActive) customCursor.style.display = "block";
             }
 
-            whackGame.addEventListener('mousemove', handleMouseMove);
-            whackGame.addEventListener('mouseenter', () => {
-                customCursor.style.display = "block";
+            whackGame.addEventListener("mousemove", moveHammer);
+            whackGame.addEventListener("mouseenter", () => {
+                if (whackGameActive) customCursor.style.display = "block";
             });
-            whackGame.addEventListener('mouseleave', () => {
+            whackGame.addEventListener("mouseleave", () => {
                 customCursor.style.display = "none";
             });
 
-            // Event-Listener beim Verlassen entfernen
-            document.getElementById("whack-back-btn").addEventListener('click', () => {
-                whackGame.removeEventListener('mousemove', handleMouseMove);
-            });
-
+            // Starten des Spiels
             startWhackGame();
         }
 
         function startWhackGame() {
-            console.log("Starting Whack-a-Mole Game");
+            console.log("Starting Whack-a-Mole");
+            const scoreDisplay = document.getElementById("whack-a-mole-score");
+            const timerDisplay = document.getElementById("whack-a-mole-timer");
+            const customCursor = document.getElementById("custom-cursor");
             whackScore = 0;
-            whackTimer = 30;
+            whackTimeLeft = 30;
             whackGameActive = true;
-            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+            scoreDisplay.textContent = `Score: ${whackScore}`;
+            timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
 
-            whackInterval = setInterval(() => {
-                if (whackTimer <= 0 || !whackGameActive) {
-                    clearInterval(whackInterval);
-                    whackGameActive = false;
-                    document.getElementById("custom-cursor").style.display = "none";
-                    document.getElementById("score").style.display = "block";
-                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
-                    saveScore("whack-a-mole", whackScore);
-                    updateTop10();
-                    return;
-                }
-                whackTimer--;
-                document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+            function showRandomMole() {
+                if (!whackGameActive) return;
                 const holes = document.getElementsByClassName("mole-hole");
                 for (let hole of holes) {
                     hole.classList.remove("active");
                 }
                 const randomHole = holes[Math.floor(Math.random() * holes.length)];
                 randomHole.classList.add("active");
-                setTimeout(() => {
-                    if (randomHole.classList.contains("active") && whackGameActive) {
-                        randomHole.classList.remove("active");
-                    }
-                }, 800);
+                moleTimeout = setTimeout(() => {
+                    if (whackGameActive) randomHole.classList.remove("active");
+                    showRandomMole();
+                }, 600); // Maulwurf bleibt 600ms sichtbar
+            }
+
+            whackGameLoop = setInterval(() => {
+                if (whackTimeLeft <= 0 || !whackGameActive) {
+                    clearInterval(whackGameLoop);
+                    clearTimeout(moleTimeout);
+                    whackGameActive = false;
+                    customCursor.style.display = "none";
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
+                    saveScore("whack-a-mole", whackScore);
+                    updateTop10();
+                    return;
+                }
+                whackTimeLeft--;
+                timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
             }, 1000);
+
+            showRandomMole();
         }
 
         function whackMole(event, hole) {
-            if (hole.classList.contains("active") && whackGameActive) {
+            if (!whackGameActive) return;
+            if (hole.classList.contains("active")) {
                 whackScore++;
                 document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
                 hole.classList.remove("active");
                 const customCursor = document.getElementById("custom-cursor");
                 customCursor.classList.add("hammer-hit");
-                setTimeout(() => {
-                    customCursor.classList.remove("hammer-hit");
-                }, 300);
+                setTimeout(() => customCursor.classList.remove("hammer-hit"), 200);
             }
             event.stopPropagation();
         }
@@ -1124,7 +1133,8 @@
                 }
                 if (whackGameActive) {
                     whackGameActive = false;
-                    clearInterval(whackInterval);
+                    clearInterval(whackGameLoop);
+                    clearTimeout(moleTimeout);
                     document.getElementById("custom-cursor").style.display = "none";
                 }
                 document.getElementById("game-buttons").style.display = "flex";
