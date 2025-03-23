@@ -35,6 +35,7 @@
             font-size: 2.2rem;
             margin: 15px 0;
             color: #00D4FF;
+            text-shadow: 0 0 10px #00Dieki
             text-shadow: 0 0 5px #00D4FF;
         }
         #progress-container {
@@ -94,11 +95,11 @@
         }
         #game-buttons {
             display: flex;
-            flex-direction: row; /* Buttons nebeneinander */
+            flex-direction: row;
             justify-content: center;
-            gap: 10px; /* Abstand zwischen Buttons */
-            flex-wrap: nowrap; /* Kein Umbruch */
-            width: auto; /* Breite automatisch an Inhalt anpassen */
+            gap: 10px;
+            flex-wrap: nowrap;
+            width: auto;
             padding: 15px;
         }
         #nickname-section:hover, #game-buttons:hover, #quiz-container:hover, #memory-container:hover, #whack-a-mole-container:hover, #snake-container:hover, #flappy-frog-container:hover, #full-ranking-container:hover, #top-10-container:hover {
@@ -135,7 +136,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.3s;
-            margin: 0; /* Margin entfernt für enge Anordnung */
+            margin: 0;
         }
         #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #view-full-ranking:hover, #play-button:hover {
             transform: scale(1.1);
@@ -181,8 +182,8 @@
         }
         #memory-container {
             width: 90%;
-            max-width: 1000px; /* Erweitert, um alle Karten einzuschließen */
-            padding: 25px 60px; /* Padding angepasst */
+            max-width: 1000px;
+            padding: 25px 60px;
         }
         #memory-game {
             display: grid;
@@ -190,30 +191,30 @@
             gap: 10px;
             justify-content: center;
             margin: 20px auto;
-            border: none; /* Mittlerer Rahmen entfernt */
-            background-color: transparent; /* Hintergrund transparent */
-            width: 100%; /* Volle Breite des Containers */
-            max-width: 880px; /* 8 Karten à 100px + 7 Lücken à 10px */
+            border: none;
+            background-color: transparent;
+            width: 100%;
+            max-width: 880px;
         }
         #whack-a-mole-container {
             position: relative;
-            padding: 25px; /* Padding beibehalten */
+            padding: 25px;
         }
         #whack-a-mole-game {
             display: grid;
-            grid-template-columns: repeat(4, 120px); /* Größere Löcher */
+            grid-template-columns: repeat(4, 120px);
             gap: 15px;
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            width: 100%; /* Volle Breite des Containers */
-            height: 550px; /* Höhe angepasst, um mehr Platz zu bieten */
+            width: 100%;
+            height: 550px;
             background-color: #1A1A2E;
             cursor: none;
             box-sizing: border-box;
         }
         .mole-hole {
-            width: 120px; /* Größere Löcher */
+            width: 120px;
             height: 120px;
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
@@ -297,7 +298,7 @@
             margin: 0 auto;
         }
         #snake-back-btn {
-            display: none; /* Standardmäßig versteckt */
+            display: none;
         }
         #flappy-frog-canvas {
             border: 2px solid #00D4FF;
@@ -328,14 +329,43 @@
             margin-left: auto;
             margin-right: auto;
         }
+        /* Tabs für Top-10 */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            background: linear-gradient(90deg, #00D4FF, #90E0EF);
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: #1A1A2E;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s, opacity 0.3s;
+        }
+        .tab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+        }
+        .tab.active {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
+        }
+        .tab:not(.active) {
+            opacity: 0.6;
+        }
         @media (max-width: 900px) {
             #memory-game {
                 grid-template-columns: repeat(4, 80px);
-                max-width: 350px; /* 4 Karten à 80px + 3 Lücken à 10px */
+                max-width: 350px;
             }
             #memory-container {
                 padding: 20px 30px;
-                max-width: 410px; /* Angepasst für kleinere Karten */
+                max-width: 410px;
             }
             .memory-card {
                 width: 80px;
@@ -344,7 +374,7 @@
             #whack-a-mole-game {
                 grid-template-columns: repeat(4, 80px);
                 width: 100%;
-                height: 400px; /* Angepasst für kleinere Bildschirme */
+                height: 400px;
             }
             .mole-hole {
                 width: 80px;
@@ -369,11 +399,19 @@
                 width: 80%;
             }
             #game-buttons {
-                flex-direction: column; /* Bei kleinen Bildschirmen untereinander */
+                flex-direction: column;
                 gap: 10px;
             }
             #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
                 max-width: 100%;
+            }
+            .tab-container {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            .tab {
+                padding: 8px 15px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -442,6 +480,13 @@
 
     <div id="top-10-container" style="display: none;">
         <h1>Top 10 Players</h1>
+        <div class="tab-container">
+            <div class="tab active" onclick="showTab('quiz')">Quiz</div>
+            <div class="tab" onclick="showTab('memory')">Memory</div>
+            <div class="tab" onclick="showTab('whack-a-mole')">Whack-a-Mole</div>
+            <div class="tab" onclick="showTab('snake')">Snake</div>
+            <div class="tab" onclick="showTab('flappy-frog')">Flappy Frog</div>
+        </div>
         <ol id="top-10-list"></ol>
         <button class="game-button" onclick="showSection('full-ranking')">Full Leaderboard</button>
     </div>
@@ -537,6 +582,7 @@
             document.getElementById("nickname-section").style.display = "none";
             document.getElementById("game-buttons").style.display = "flex";
             document.getElementById("top-10-container").style.display = "block";
+            showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
             console.log("Switched to game selection");
         }
 
@@ -561,6 +607,7 @@
                 document.getElementById("nickname-section").style.display = "none";
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
+                showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
                 console.log("Loaded saved nickname:", nickname);
             }
         });
@@ -631,7 +678,7 @@
                 document.getElementById("score").style.display = "block";
                 document.getElementById("score").textContent = `Quiz Score: ${quizScore}/${questions.length}`;
                 saveScore("quiz", quizScore);
-                updateTop10();
+                updateTop10('quiz');
             }
         });
 
@@ -710,7 +757,7 @@
                         document.getElementById("score").style.display = "block";
                         document.getElementById("score").textContent = `Memory Moves: ${memoryScore}`;
                         saveScore("memory", memoryScore);
-                        updateTop10();
+                        updateTop10('memory');
                     }, 500);
                 }
             } else {
@@ -739,7 +786,6 @@
             timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
             customCursor.style.display = "none";
 
-            // Löcher erstellen
             for (let i = 0; i < 16; i++) {
                 const hole = document.createElement("div");
                 hole.classList.add("mole-hole");
@@ -747,7 +793,6 @@
                 whackGame.appendChild(hole);
             }
 
-            // Hammer-Steuerung
             let hammerX = 0, hammerY = 0;
             function moveHammer(e) {
                 const rect = whackGame.getBoundingClientRect();
@@ -762,11 +807,9 @@
             whackGame.addEventListener("mouseenter", () => customCursor.style.display = "block");
             whackGame.addEventListener("mouseleave", () => customCursor.style.display = "none");
 
-            // Klick-Erkennung mit Rotation
             whackGame.addEventListener("click", (e) => {
                 if (!whackGameActive) return;
 
-                // Hammer rotieren bei jedem Klick
                 customCursor.classList.add("rotate");
                 setTimeout(() => customCursor.classList.remove("rotate"), 300);
 
@@ -778,14 +821,14 @@
                         const holeX = holeRect.left - gameRect.left;
                         const holeY = holeRect.top - gameRect.top;
                         const hammerRect = {
-                            left: hammerX - 40, // Hammer ist 80px breit
+                            left: hammerX - 40,
                             right: hammerX + 40,
-                            top: hammerY - 40, // Hammer ist 80px hoch
+                            top: hammerY - 40,
                             bottom: hammerY + 40
                         };
                         const holeArea = {
                             left: holeX,
-                            right: holeX + 120, // Größere Löcher
+                            right: holeX + 120,
                             top: holeY,
                             bottom: holeY + 120
                         };
@@ -816,7 +859,7 @@
             lastFrameTime = performance.now();
 
             let moleTimer = 0;
-            const moleInterval = 1000; // Maulwurf alle 1000ms (1 Sekunde)
+            const moleInterval = 1000;
 
             function gameLoop(currentTime) {
                 if (!whackGameActive) {
@@ -824,21 +867,19 @@
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
                     saveScore("whack-a-mole", whackScore);
-                    updateTop10();
+                    updateTop10('whack-a-mole');
                     return;
                 }
 
                 const deltaTime = (currentTime - lastFrameTime) / 1000;
                 lastFrameTime = currentTime;
 
-                // Timer aktualisieren
                 whackTimeLeft -= deltaTime;
                 if (whackTimeLeft <= 0) {
                     whackGameActive = false;
                 }
                 timerDisplay.textContent = `Time: ${Math.max(0, Math.floor(whackTimeLeft))}s`;
 
-                // Maulwurf anzeigen
                 moleTimer += deltaTime * 1000;
                 if (moleTimer >= moleInterval) {
                     const holes = document.getElementsByClassName("mole-hole");
@@ -881,7 +922,7 @@
             document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.getElementById("snake-container").style.display = "flex";
             snakeCanvas.style.display = "block";
-            document.getElementById("snake-back-btn").style.display = "none"; // Back-Button verstecken
+            document.getElementById("snake-back-btn").style.display = "none";
             document.addEventListener("keydown", changeDirection);
             drawSnakeGame();
             console.log("Waiting for W, A, S, or D to start");
@@ -993,10 +1034,10 @@
             document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.getElementById("score").style.display = "block";
             document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
-            document.getElementById("snake-back-btn").style.display = "block"; // Back-Button anzeigen
+            document.getElementById("snake-back-btn").style.display = "block";
             saveScore("snake", snakeScore);
-            updateTop10();
-            drawSnakeGame(); // "Game Over!" anzeigen
+            updateTop10('snake');
+            drawSnakeGame();
         }
 
         const flappyCanvas = document.getElementById("flappy-frog-canvas");
@@ -1034,7 +1075,7 @@
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Flappy Frog Score: ${flappyScore}`;
                     saveScore("flappy-frog", flappyScore);
-                    updateTop10();
+                    updateTop10('flappy-frog');
                     return;
                 }
 
@@ -1126,26 +1167,38 @@
             localStorage.setItem("rankings", JSON.stringify(rankings));
         }
 
-        function updateTop10() {
+        function updateTop10(activeTab) {
             const top10List = document.getElementById("top-10-list");
             top10List.innerHTML = "";
             const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            const top10 = rankings.slice(0, 10);
+            const filteredRankings = rankings.filter(entry => entry.gameType === activeTab);
+            const top10 = filteredRankings.slice(0, 10);
             top10.forEach(entry => {
                 const li = document.createElement("li");
                 if (entry.gameType === "quiz") {
-                    li.textContent = `${entry.nickname}: Quiz - ${entry.score}/${questions.length}`;
+                    li.textContent = `${entry.nickname}: ${entry.score}/${questions.length}`;
                 } else if (entry.gameType === "memory") {
-                    li.textContent = `${entry.nickname}: Memory - ${entry.score} moves`;
+                    li.textContent = `${entry.nickname}: ${entry.score} moves`;
                 } else if (entry.gameType === "whack-a-mole") {
-                    li.textContent = `${entry.nickname}: Whack-a-Mole - ${entry.score} points`;
+                    li.textContent = `${entry.nickname}: ${entry.score} points`;
                 } else if (entry.gameType === "snake") {
-                    li.textContent = `${entry.nickname}: Snake - ${entry.score} points`;
+                    li.textContent = `${entry.nickname}: ${entry.score} points`;
                 } else if (entry.gameType === "flappy-frog") {
-                    li.textContent = `${entry.nickname}: Flappy Frog - ${entry.score} points`;
+                    li.textContent = `${entry.nickname}: ${entry.score} points`;
                 }
                 top10List.appendChild(li);
             });
+        }
+
+        function showTab(gameType) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().replace(' ', '-') === gameType) {
+                    tab.classList.add('active');
+                }
+            });
+            updateTop10(gameType);
         }
 
         function showFullRanking() {
@@ -1169,8 +1222,6 @@
             });
         }
 
-        updateTop10();
-
         function showSection(section) {
             document.getElementById("quiz-container").style.display = "none";
             document.getElementById("memory-container").style.display = "none";
@@ -1193,6 +1244,7 @@
                 }
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
+                showTab('quiz'); // Standardmäßig Quiz-Tab anzeigen
             } else if (section === "quiz") {
                 document.getElementById("quiz-container").style.display = "block";
                 currentQuestionIndex = 0;
