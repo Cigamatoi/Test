@@ -144,6 +144,13 @@
             color: #00D4FF;
             text-shadow: 0 0 5px #00D4FF;
         }
+        #whack-a-mole-timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00D4FF;
+            text-shadow: 0 0 5px #00D4FF;
+        }
         .options {
             display: flex;
             flex-direction: column;
@@ -168,17 +175,20 @@
             font-size: 1.2rem;
             color: #90E0EF;
         }
-        
-    #memory-game {
-        display: grid;
-        grid-template-columns: repeat(8, 100px);
-        gap: 10px;
-        justify-content: center;
-        margin: 20px auto;
-        padding: 20px 40px;
-        background-color: rgba(0, 0, 0, 0.2);
-    }
-    
+        #memory-game {
+            display: grid;
+            grid-template-columns: repeat(8, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin: 20px auto;
+            padding: 40px 60px;
+            border: 3px solid #00D4FF;
+            border-radius: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            width: calc(100% + 80px);
+            max-width: 1000px;
+            box-sizing: border-box;
+        }
         #whack-a-mole-game {
             display: grid;
             grid-template-columns: repeat(4, 100px);
@@ -186,7 +196,10 @@
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            cursor: none;
+            cursor: none; /* Standardcursor ausblenden */
+            width: 440px; /* 4 * 100px + 3 * 10px Lücken */
+            height: 440px; /* Quadratisches Spielfeld */
+            background-color: #1A1A2E; /* Hintergrundfarbe zur Visualisierung */
         }
         .mole-hole {
             width: 100px;
@@ -241,23 +254,16 @@
             transform: rotateY(180deg);
             box-shadow: 0 4px 15px rgba(0, 212, 255, 0.7);
         }
-        
-    .custom-cursor {
-        position: fixed;
-        width: 80px;
-        height: 80px;
-        background: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') no-repeat center;
-        background-size: contain;
-        pointer-events: none;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        display: none;
-        transform: translate(-40px, -40px); /* Zentriert den Hammer exakt */
-    }
-    
-        #whack-a-mole-container.active .custom-cursor {
-            display: block;
+        .custom-cursor {
+            position: fixed; /* Folgt der Maus unabhängig vom Scrollen */
+            width: 80px;
+            height: 80px;
+            background: url('https://github.com/Cigamatoi/Rebased/blob/main/BANHAMMER.png?raw=true') no-repeat center;
+            background-size: contain;
+            pointer-events: none; /* Klicks gehen durch den Hammer */
+            z-index: 1000; /* Sicherstellen, dass der Hammer oben liegt */
+            transform: translate(-50%, -50%); /* Zentrierung an der Maus */
+            display: none; /* Standardmäßig unsichtbar */
         }
         .custom-cursor.hammer-hit {
             animation: hammerSwing 0.3s ease-out;
@@ -306,25 +312,24 @@
         }
         .back-btn {
             margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
         @media (max-width: 900px) {
-            
-    #memory-game {
-        display: grid;
-        grid-template-columns: repeat(8, 100px);
-        gap: 10px;
-        justify-content: center;
-        margin: 20px auto;
-        padding: 20px 40px;
-        background-color: rgba(0, 0, 0, 0.2);
-    }
-    
+            #memory-game {
+                grid-template-columns: repeat(4, 80px);
+                padding: 20px 30px;
+                width: calc(100% + 40px);
+            }
             .memory-card {
                 width: 80px;
                 height: 80px;
             }
             #whack-a-mole-game {
                 grid-template-columns: repeat(4, 80px);
+                width: 350px; /* Angepasst für kleinere Bildschirme */
+                height: 350px;
             }
             .mole-hole {
                 width: 80px;
@@ -366,19 +371,17 @@
     </div>
     <p id="message">REBASED or naked skiing!</p>
     <img id="image" src="https://cigamatoi.github.io/Rebased/Rebased.jpg" alt="Surprise Image">
-    
-    <form id="nickname-section">
+    <div id="nickname-section">
         <input type="text" id="nickname-input" placeholder="Enter your nickname..." maxlength="20">
         <div id="nickname-error"></div>
-        <button id="submit-nickname" type="submit">Submit</button>
-    </form>
-    
+        <button id="submit-nickname" onclick="submitNickname()">Submit</button>
+    </div>
     <div id="game-buttons" style="display: none;">
-        <button class="game-button" >Quiz</button>
-        <button class="game-button" >Memory</button>
-        <button class="game-button" >Whack-a-Mole</button>
-        <button class="game-button" >Snake</button>
-        <button class="game-button" >Flappy Frog</button>
+        <button class="game-button" onclick="showSection('quiz')">Quiz</button>
+        <button class="game-button" onclick="showSection('memory')">Memory</button>
+        <button class="game-button" onclick="showSection('whack-a-mole')">Whack-a-Mole</button>
+        <button class="game-button" onclick="showSection('snake')">Snake</button>
+        <button class="game-button" onclick="showSection('flappy-frog')">Flappy Frog</button>
     </div>
 
     <div id="quiz-container" style="display: none;">
@@ -386,51 +389,47 @@
         <div class="options" id="options"></div>
         <div id="feedback"></div>
         <button id="next-btn">Next Question</button>
-        <button class="back-btn" >Back</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
     <div id="score"></div>
 
     <div id="memory-container" style="display: none;">
         <div id="memory-game"></div>
         <div id="memory-score"></div>
-        <button class="back-btn" >Back</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
-    
     <div id="whack-a-mole-container" style="display: none;">
         <div id="whack-a-mole-game"></div>
         <div id="whack-a-mole-score">Score: 0</div>
         <div id="whack-a-mole-timer">Time: 30s</div>
         <div class="custom-cursor" id="custom-cursor"></div>
-        <button class="back-btn"  id="whack-back-btn" style="margin-top: 20px;">Back</button>
+        <button class="back-btn" onclick="showSection('main')" id="whack-back-btn">Back</button>
     </div>
-    
 
-    
     <div id="snake-container" style="display: none;">
         <canvas id="snake-canvas" width="400" height="400"></canvas>
         <div id="snake-score">Score: 0</div>
-        <button class="back-btn"  id="snake-back-btn">Back</button>
-    
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="flappy-frog-container" style="display: none;">
         <canvas id="flappy-frog-canvas" width="400" height="600"></canvas>
         <div id="flappy-frog-score">Score: 0</div>
-        <button id="play-button" >Play</button>
-        <button class="back-btn" >Back</button>
+        <button id="play-button" onclick="startFlappyGame()">Play</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="top-10-container" style="display: none;">
         <h1>Top 10 Players</h1>
         <ol id="top-10-list"></ol>
-        <button class="game-button" >Full Leaderboard</button>
+        <button class="game-button" onclick="showSection('full-ranking')">Full Leaderboard</button>
     </div>
 
     <div id="full-ranking-container" style="display: none;">
         <h1>Full Leaderboard</h1>
         <ol id="full-ranking-list"></ol>
-        <button class="back-btn" >Back</button>
+        <button class="back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <script>
@@ -484,47 +483,15 @@
 
         const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
 
-        
-    function submitNickname(event) {
-        event.preventDefault();
-        console.log("submitNickname called");
-        const input = document.getElementById("nickname-input");
-        const errorElement = document.getElementById("nickname-error");
+        function submitNickname() {
+            console.log("submitNickname called");
+            const input = document.getElementById("nickname-input");
+            const errorElement = document.getElementById("nickname-error");
 
-        if (!input) {
-            console.error("Nickname input not found");
-            return;
-        }
-
-        const inputValue = input.value.trim();
-        console.log("Nickname entered:", inputValue);
-
-        if (inputValue === "") {
-            errorElement.textContent = "Please enter a nickname.";
-            errorElement.style.display = "block";
-            console.log("Error: Empty nickname");
-            return;
-        }
-
-        const badWords = ["badword", "idiot", "dumm", "stupid", "ass", "fuck", "shit", "NWIota"];
-        if (badWords.some(word => inputValue.toLowerCase().includes(word))) {
-            errorElement.textContent = "Please choose a different nickname (inappropriate word detected).";
-            errorElement.style.display = "block";
-            console.log("Error: Inappropriate word detected");
-            return;
-        }
-
-        nickname = inputValue;
-        localStorage.setItem("nickname", nickname);
-        console.log("Nickname saved:", nickname);
-
-        errorElement.style.display = "none";
-        document.getElementById("nickname-section").style.display = "none";
-        document.getElementById("game-buttons").style.display = "flex";
-        document.getElementById("top-10-container").style.display = "block";
-        updateTop10();
-    }
-    
+            if (!input) {
+                console.error("Nickname input not found");
+                return;
+            }
 
             const inputValue = input.value.trim();
             console.log("Nickname entered:", inputValue);
@@ -554,64 +521,17 @@
             console.log("Switched to game selection");
         }
 
-        
-
-    
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded fully loaded");
-
-    const nicknameForm = document.getElementById("nickname-section");
-    if (nicknameForm) {
-        nicknameForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-            submitNickname();
-        });
-    }
-
-    // Game Buttons (Quiz, Memory, etc.)
-    const gameButtons = document.querySelectorAll(".game-button");
-    gameButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            const section = button.textContent.trim().toLowerCase().replace(/ /g, "-");
-            showSection(section);
-        });
-    });
-
-    // Back Buttons
-    const backButtons = document.querySelectorAll(".back-btn");
-    backButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            showSection("main");
-        });
-    });
-
-    // Saved Nickname check
-    const savedNickname = localStorage.getItem("nickname");
-    if (savedNickname) {
-        nickname = savedNickname;
-        document.getElementById("nickname-section").style.display = "none";
-        document.getElementById("game-buttons").style.display = "flex";
-        document.getElementById("top-10-container").style.display = "block";
-        updateTop10();
-        console.log("Loaded saved nickname:", nickname);
-    }
-});
-
-    
-    } else {
-        console.error("Nickname input not found on DOM load");
-    }
-
-    const savedNickname = localStorage.getItem("nickname");
-    if (savedNickname) {
-        nickname = savedNickname;
-        document.getElementById("nickname-section").style.display = "none";
-        document.getElementById("game-buttons").style.display = "flex";
-        document.getElementById("top-10-container").style.display = "block";
-        console.log("Loaded saved nickname:", nickname);
-    }
-});
-
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOM fully loaded");
+            const nicknameInput = document.getElementById("nickname-input");
+            if (nicknameInput) {
+                nicknameInput.addEventListener("keypress", function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        console.log("Enter pressed");
+                        submitNickname();
+                    }
+                });
             } else {
                 console.error("Nickname input not found on DOM load");
             }
@@ -781,97 +701,97 @@ document.addEventListener("DOMContentLoaded", function() {
             flippedCards = [];
         }
 
-        
-let whackScore = 0;
-let whackTimer = 30;
-let whackGameActive = false;
-let whackInterval = null;
+        let whackScore = 0;
+        let whackTimer = 30;
+        let whackGameActive = false;
+        let whackInterval = null;
 
-function initWhackAMole() {
-    console.log("Initializing Whack-a-Mole");
-    const whackGame = document.getElementById("whack-a-mole-game");
-    whackGame.innerHTML = "";
-    whackScore = 0;
-    whackTimer = 30;
-    whackGameActive = false;
-    document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-    document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
-
-    for (let i = 0; i < 16; i++) {
-        const hole = document.createElement("div");
-        hole.classList.add("mole-hole");
-        hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Head">';
-        hole.addEventListener("click", (e) => whackMole(e, hole));
-        whackGame.appendChild(hole);
-    }
-
-    const whackContainer = document.getElementById("whack-a-mole-container");
-    whackContainer.addEventListener("mousemove", (e) => {
-        const rect = whackGame.getBoundingClientRect();
-        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
-            customCursor.style.left = `${e.clientX}px`;
-            customCursor.style.top = `${e.clientY}px`;
-            customCursor.style.display = "block";
-        } else {
-            customCursor.style.display = "none";
-        }
-    });
-    whackContainer.addEventListener("mouseleave", () => {
-        customCursor.style.display = "none";
-    });
-
-    startWhackGame();
-}
-
-function startWhackGame() {
-    console.log("Starting Whack-a-Mole Game");
-    whackScore = 0;
-    whackTimer = 30;
-    whackGameActive = true;
-    document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-    document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
-    document.getElementById("whack-a-mole-container").classList.add("active");
-
-    whackInterval = setInterval(() => {
-        if (whackTimer <= 0) {
-            clearInterval(whackInterval);
+        function initWhackAMole() {
+            console.log("Initializing Whack-a-Mole");
+            const whackGame = document.getElementById("whack-a-mole-game");
+            whackGame.innerHTML = "";
+            whackScore = 0;
+            whackTimer = 30;
             whackGameActive = false;
-            document.getElementById("whack-a-mole-container").classList.remove("active");
-            customCursor.style.display = "none";
-            document.getElementById("whack-a-mole-container").style.display = "block";
-            document.getElementById("score").style.display = "block";
-            document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
-            saveScore("whack-a-mole", whackScore);
-            updateTop10();
-            return;
-        }
-        whackTimer--;
-        document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
-        const holes = document.getElementsByClassName("mole-hole");
-        for (let hole of holes) {
-            hole.classList.remove("active");
-        }
-        const randomHole = holes[Math.floor(Math.random() * holes.length)];
-        randomHole.classList.add("active");
-        setTimeout(() => {
-            randomHole.classList.remove("active");
-        }, 800);
-    }, 1000);
-}
+            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+            customCursor.style.display = "none"; // Hammer initial unsichtbar
 
-function whackMole(event, hole) {
-    if (hole.classList.contains("active") && whackGameActive) {
-        whackScore++;
-        document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-        hole.classList.remove("active");
-        customCursor.classList.add("hammer-hit");
-        setTimeout(() => {
-            customCursor.classList.remove("hammer-hit");
-        }, 300);
-    }
-    event.stopPropagation();
-}
-, 300);
+            // Erstellen der Löcher
+            for (let i = 0; i < 16; i++) {
+                const hole = document.createElement("div");
+                hole.classList.add("mole-hole");
+                hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Head">';
+                hole.addEventListener("click", (e) => whackMole(e, hole));
+                whackGame.appendChild(hole);
+            }
+
+            // Maus-Tracking auf document
+            document.addEventListener('mousemove', handleMouseMove);
+
+            startWhackGame();
+        }
+
+        function handleMouseMove(e) {
+            const whackGame = document.getElementById("whack-a-mole-game");
+            const rect = whackGame.getBoundingClientRect();
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+            if (mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom) {
+                customCursor.style.left = `${mouseX}px`;
+                customCursor.style.top = `${mouseY}px`;
+                customCursor.style.display = "block"; // Hammer sichtbar
+            } else {
+                customCursor.style.display = "none"; // Hammer unsichtbar
+            }
+        }
+
+        function startWhackGame() {
+            console.log("Starting Whack-a-Mole Game");
+            whackScore = 0;
+            whackTimer = 30;
+            whackGameActive = true;
+            document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+            document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+
+            whackInterval = setInterval(() => {
+                if (whackTimer <= 0 || !whackGameActive) {
+                    clearInterval(whackInterval);
+                    whackGameActive = false;
+                    customCursor.style.display = "none";
+                    document.removeEventListener('mousemove', handleMouseMove);
+                    document.getElementById("score").style.display = "block";
+                    document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
+                    saveScore("whack-a-mole", whackScore);
+                    updateTop10();
+                    return;
+                }
+                whackTimer--;
+                document.getElementById("whack-a-mole-timer").textContent = `Time: ${whackTimer}s`;
+                const holes = document.getElementsByClassName("mole-hole");
+                for (let hole of holes) {
+                    hole.classList.remove("active");
+                }
+                const randomHole = holes[Math.floor(Math.random() * holes.length)];
+                randomHole.classList.add("active");
+                setTimeout(() => {
+                    if (randomHole.classList.contains("active") && whackGameActive) {
+                        randomHole.classList.remove("active");
+                    }
+                }, 800);
+            }, 1000);
+        }
+
+        function whackMole(event, hole) {
+            if (hole.classList.contains("active") && whackGameActive) {
+                console.log("Hammer hit triggered");
+                whackScore++;
+                document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
+                hole.classList.remove("active");
+                customCursor.classList.add("hammer-hit");
+                setTimeout(() => {
+                    customCursor.classList.remove("hammer-hit");
+                }, 300);
             }
             event.stopPropagation();
         }
@@ -1202,8 +1122,8 @@ function whackMole(event, hole) {
                 if (whackGameActive) {
                     whackGameActive = false;
                     clearInterval(whackInterval);
-                    document.getElementById("whack-a-mole-container").classList.remove("active");
                     customCursor.style.display = "none";
+                    document.removeEventListener('mousemove', handleMouseMove);
                 }
                 document.getElementById("game-buttons").style.display = "flex";
                 document.getElementById("top-10-container").style.display = "block";
