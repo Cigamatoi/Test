@@ -296,6 +296,9 @@
             display: block;
             margin: 0 auto;
         }
+        #snake-back-btn {
+            display: none; /* Standardmäßig versteckt */
+        }
         #flappy-frog-canvas {
             border: 2px solid #00D4FF;
             background-color: #1A1A2E;
@@ -427,6 +430,7 @@
         <canvas id="snake-canvas" width="400" height="400"></canvas>
         <div id="snake-score">Score: 0</div>
         <button class="back-btn" onclick="showSection('main')">Back</button>
+        <button class="back-btn" id="snake-back-btn" onclick="showSection('main')">Back</button>
     </div>
 
     <div id="flappy-frog-container" style="display: none;">
@@ -877,6 +881,7 @@
             document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.getElementById("snake-container").style.display = "flex";
             snakeCanvas.style.display = "block";
+            document.getElementById("snake-back-btn").style.display = "none"; // Back-Button verstecken
             document.addEventListener("keydown", changeDirection);
             drawSnakeGame();
             console.log("Waiting for W, A, S, or D to start");
@@ -974,17 +979,24 @@
                 snakeCtx.font = "20px Orbitron";
                 snakeCtx.fillText("Press W, A, S, or D to start", snakeCanvas.width / 2 - 120, snakeCanvas.height / 2);
             }
+            if (!snakeGameActive) {
+                snakeCtx.fillStyle = "#FF6B6B";
+                snakeCtx.font = "30px Orbitron";
+                snakeCtx.fillText("Game Over!", snakeCanvas.width / 2 - 80, snakeCanvas.height / 2);
+            }
         }
 
         function endSnakeGame() {
             console.log("Ending Snake Game");
             snakeGameActive = false;
             clearInterval(snakeInterval);
-            document.getElementById("snake-container").style.display = "none";
+            document.getElementById("snake-score").textContent = `Score: ${snakeScore}`;
             document.getElementById("score").style.display = "block";
             document.getElementById("score").textContent = `Snake Score: ${snakeScore}`;
+            document.getElementById("snake-back-btn").style.display = "block"; // Back-Button anzeigen
             saveScore("snake", snakeScore);
             updateTop10();
+            drawSnakeGame(); // "Game Over!" anzeigen
         }
 
         const flappyCanvas = document.getElementById("flappy-frog-canvas");
