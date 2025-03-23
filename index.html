@@ -207,10 +207,8 @@
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
             border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
+            overflow: hidden;
         }
         .mole-hole img.target {
             width: 100%;
@@ -703,8 +701,7 @@
         let whackScore = 0;
         let whackTimeLeft = 30;
         let whackGameActive = false;
-        let whackGameLoop = null;
-        let moleTimeout = null;
+        let lastFrameTime = 0;
 
         function initWhackAMole() {
             console.log("Initializing Whack-a-Mole");
@@ -725,29 +722,59 @@
                 const hole = document.createElement("div");
                 hole.classList.add("mole-hole");
                 hole.innerHTML = '<img src="https://github.com/Cigamatoi/Rebased/blob/main/CFB.png?raw=true" class="target" alt="Mole">';
-                hole.addEventListener("click", (e) => whackMole(e, hole));
                 whackGame.appendChild(hole);
             }
 
-            // Hammer-Cursor
+            // Hammer-Steuerung
+            let hammerX = 0, hammerY = 0;
             function moveHammer(e) {
                 const rect = whackGame.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                customCursor.style.left = `${x}px`;
-                customCursor.style.top = `${y}px`;
-                if (whackGameActive) customCursor.style.display = "block";
+                hammerX = e.clientX - rect.left;
+                hammerY = e.clientY - rect.top;
+                customCursor.style.left = `${hammerX}px`;
+                customCursor.style.top = `${hammerY}px`;
+                customCursor.style.display = "block";
             }
 
             whackGame.addEventListener("mousemove", moveHammer);
-            whackGame.addEventListener("mouseenter", () => {
-                if (whackGameActive) customCursor.style.display = "block";
-            });
-            whackGame.addEventListener("mouseleave", () => {
-                customCursor.style.display = "none";
+            whackGame.addEventListener("mouseenter", () => customCursor.style.display = "block");
+            whackGame.addEventListener("mouseleave", () => customCursor.style.display = "none");
+
+            // Klick-Erkennung
+            whackGame.addEventListener("click", (e) => {
+                if (!whackGameActive) return;
+                const holes = document.getElementsByClassName("mole-hole");
+                for (let hole of holes) {
+                    if (hole.classList.contains("active")) {
+                        const holeRect = hole.getBoundingClientRect();
+                        const gameRect = whackGame.getBoundingClientRect();
+                        const holeX = holeRect.left - gameRect.left;
+                        const holeY = holeRect.top - gameRect.top;
+                        const hammerRect = {
+                            left: hammerX - 40, // Hammer ist 80px breit
+                            right: hammerX + 40,
+                            top: hammerY - 40, // Hammer ist 80px hoch
+                            bottom: hammerY + 40
+                        };
+                        const holeArea = {
+                            left: holeX,
+                            right: holeX + 100,
+                            top: holeY,
+                            bottom: holeY + 100
+                        };
+
+                        if (hammerRect.right > holeArea.left && hammerRect.left < holeArea.right &&
+                            hammerRect.bottom > holeArea.top && hammerRect.top < holeArea.bottom) {
+                            whackScore++;
+                            scoreDisplay.textContent = `Score: ${whackScore}`;
+                            hole.classList.remove("active");
+                            customCursor.classList.add("hammer-hit");
+                            setTimeout(() => customCursor.classList.remove("hammer-hit"), 200);
+                        }
+                    }
+                }
             });
 
-            // Starten des Spiels
             startWhackGame();
         }
 
@@ -761,26 +788,13 @@
             whackGameActive = true;
             scoreDisplay.textContent = `Score: ${whackScore}`;
             timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
+            lastFrameTime = performance.now();
 
-            function showRandomMole() {
-                if (!whackGameActive) return;
-                const holes = document.getElementsByClassName("mole-hole");
-                for (let hole of holes) {
-                    hole.classList.remove("active");
-                }
-                const randomHole = holes[Math.floor(Math.random() * holes.length)];
-                randomHole.classList.add("active");
-                moleTimeout = setTimeout(() => {
-                    if (whackGameActive) randomHole.classList.remove("active");
-                    showRandomMole();
-                }, 600); // Maulwurf bleibt 600ms sichtbar
-            }
+            let moleTimer = 0;
+            const moleInterval = 500; // Maulwurf alle 500ms
 
-            whackGameLoop = setInterval(() => {
-                if (whackTimeLeft <= 0 || !whackGameActive) {
-                    clearInterval(whackGameLoop);
-                    clearTimeout(moleTimeout);
-                    whackGameActive = false;
+            function gameLoop(currentTime) {
+                if (!whackGameActive) {
                     customCursor.style.display = "none";
                     document.getElementById("score").style.display = "block";
                     document.getElementById("score").textContent = `Whack-a-Mole Score: ${whackScore}`;
@@ -788,24 +802,33 @@
                     updateTop10();
                     return;
                 }
-                whackTimeLeft--;
-                timerDisplay.textContent = `Time: ${whackTimeLeft}s`;
-            }, 1000);
 
-            showRandomMole();
-        }
+                const deltaTime = (currentTime - lastFrameTime) / 1000;
+                lastFrameTime = currentTime;
 
-        function whackMole(event, hole) {
-            if (!whackGameActive) return;
-            if (hole.classList.contains("active")) {
-                whackScore++;
-                document.getElementById("whack-a-mole-score").textContent = `Score: ${whackScore}`;
-                hole.classList.remove("active");
-                const customCursor = document.getElementById("custom-cursor");
-                customCursor.classList.add("hammer-hit");
-                setTimeout(() => customCursor.classList.remove("hammer-hit"), 200);
+                // Timer aktualisieren
+                whackTimeLeft -= deltaTime;
+                if (whackTimeLeft <= 0) {
+                    whackGameActive = false;
+                }
+                timerDisplay.textContent = `Time: ${Math.max(0, Math.floor(whackTimeLeft))}s`;
+
+                // Maulwurf anzeigen
+                moleTimer += deltaTime * 1000;
+                if (moleTimer >= moleInterval) {
+                    const holes = document.getElementsByClassName("mole-hole");
+                    for (let hole of holes) {
+                        hole.classList.remove("active");
+                    }
+                    const randomHole = holes[Math.floor(Math.random() * holes.length)];
+                    randomHole.classList.add("active");
+                    moleTimer = 0;
+                }
+
+                requestAnimationFrame(gameLoop);
             }
-            event.stopPropagation();
+
+            requestAnimationFrame(gameLoop);
         }
 
         const snakeCanvas = document.getElementById("snake-canvas");
@@ -1133,8 +1156,6 @@
                 }
                 if (whackGameActive) {
                     whackGameActive = false;
-                    clearInterval(whackGameLoop);
-                    clearTimeout(moleTimeout);
                     document.getElementById("custom-cursor").style.display = "none";
                 }
                 document.getElementById("game-buttons").style.display = "flex";
