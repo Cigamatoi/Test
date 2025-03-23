@@ -94,8 +94,12 @@
         }
         #game-buttons {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: row; /* Buttons nebeneinander */
             justify-content: center;
+            gap: 10px; /* Abstand zwischen Buttons */
+            flex-wrap: nowrap; /* Kein Umbruch */
+            width: auto; /* Breite automatisch an Inhalt anpassen */
+            padding: 15px;
         }
         #nickname-section:hover, #game-buttons:hover, #quiz-container:hover, #memory-container:hover, #whack-a-mole-container:hover, #snake-container:hover, #flappy-frog-container:hover, #full-ranking-container:hover, #top-10-container:hover {
             transform: translateY(-5px);
@@ -131,7 +135,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.3s;
-            margin: 10px;
+            margin: 0; /* Margin entfernt für enge Anordnung */
         }
         #submit-nickname:hover, .game-button:hover, #next-btn:hover, .back-btn:hover, #view-full-ranking:hover, #play-button:hover {
             transform: scale(1.1);
@@ -175,35 +179,42 @@
             font-size: 1.2rem;
             color: #90E0EF;
         }
+        #memory-container {
+            width: 90%;
+            max-width: 1000px; /* Erweitert, um alle Karten einzuschließen */
+            padding: 25px 60px; /* Padding angepasst */
+        }
         #memory-game {
             display: grid;
             grid-template-columns: repeat(8, 100px);
             gap: 10px;
             justify-content: center;
             margin: 20px auto;
-            padding: 40px 60px;
-            border: 3px solid #00D4FF;
-            border-radius: 15px;
-            background-color: rgba(0, 0, 0, 0.2);
-            width: calc(100% + 80px);
-            max-width: 1000px;
-            box-sizing: border-box;
+            border: none; /* Mittlerer Rahmen entfernt */
+            background-color: transparent; /* Hintergrund transparent */
+            width: 100%; /* Volle Breite des Containers */
+            max-width: 880px; /* 8 Karten à 100px + 7 Lücken à 10px */
+        }
+        #whack-a-mole-container {
+            position: relative;
+            padding: 25px; /* Padding beibehalten */
         }
         #whack-a-mole-game {
             display: grid;
-            grid-template-columns: repeat(4, 100px);
-            gap: 10px;
+            grid-template-columns: repeat(4, 120px); /* Größere Löcher */
+            gap: 15px;
             justify-content: center;
             margin: 20px auto;
             position: relative;
-            width: 440px;
-            height: 440px;
+            width: 100%; /* Volle Breite des Containers */
+            height: 550px; /* Höhe angepasst, um mehr Platz zu bieten */
             background-color: #1A1A2E;
             cursor: none;
+            box-sizing: border-box;
         }
         .mole-hole {
-            width: 100px;
-            height: 100px;
+            width: 120px; /* Größere Löcher */
+            height: 120px;
             background-color: #1A1A2E;
             border: 2px solid #00D4FF;
             border-radius: 50%;
@@ -263,13 +274,13 @@
             transform: translate(-50%, -50%);
             display: none;
         }
-        .custom-cursor.hammer-hit {
-            animation: hammerSwing 0.2s ease-out;
+        .custom-cursor.rotate {
+            animation: hammerRotate 0.3s ease-out;
         }
-        @keyframes hammerSwing {
-            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
-            50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.2); }
-            100% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+        @keyframes hammerRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) rotate(-45deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
         }
         #snake-container {
             display: flex;
@@ -317,8 +328,11 @@
         @media (max-width: 900px) {
             #memory-game {
                 grid-template-columns: repeat(4, 80px);
+                max-width: 350px; /* 4 Karten à 80px + 3 Lücken à 10px */
+            }
+            #memory-container {
                 padding: 20px 30px;
-                width: calc(100% + 40px);
+                max-width: 410px; /* Angepasst für kleinere Karten */
             }
             .memory-card {
                 width: 80px;
@@ -326,8 +340,8 @@
             }
             #whack-a-mole-game {
                 grid-template-columns: repeat(4, 80px);
-                width: 350px;
-                height: 350px;
+                width: 100%;
+                height: 400px; /* Angepasst für kleinere Bildschirme */
             }
             .mole-hole {
                 width: 80px;
@@ -350,6 +364,10 @@
             }
             #progress-container {
                 width: 80%;
+            }
+            #game-buttons {
+                flex-direction: column; /* Bei kleinen Bildschirmen untereinander */
+                gap: 10px;
             }
             #quiz-container, #memory-container, #whack-a-mole-container, #snake-container, #flappy-frog-container, #full-ranking-container, #top-10-container {
                 max-width: 100%;
@@ -740,9 +758,14 @@
             whackGame.addEventListener("mouseenter", () => customCursor.style.display = "block");
             whackGame.addEventListener("mouseleave", () => customCursor.style.display = "none");
 
-            // Klick-Erkennung
+            // Klick-Erkennung mit Rotation
             whackGame.addEventListener("click", (e) => {
                 if (!whackGameActive) return;
+
+                // Hammer rotieren bei jedem Klick
+                customCursor.classList.add("rotate");
+                setTimeout(() => customCursor.classList.remove("rotate"), 300);
+
                 const holes = document.getElementsByClassName("mole-hole");
                 for (let hole of holes) {
                     if (hole.classList.contains("active")) {
@@ -758,9 +781,9 @@
                         };
                         const holeArea = {
                             left: holeX,
-                            right: holeX + 100,
+                            right: holeX + 120, // Größere Löcher
                             top: holeY,
-                            bottom: holeY + 100
+                            bottom: holeY + 120
                         };
 
                         if (hammerRect.right > holeArea.left && hammerRect.left < holeArea.right &&
@@ -768,8 +791,6 @@
                             whackScore++;
                             scoreDisplay.textContent = `Score: ${whackScore}`;
                             hole.classList.remove("active");
-                            customCursor.classList.add("hammer-hit");
-                            setTimeout(() => customCursor.classList.remove("hammer-hit"), 200);
                         }
                     }
                 }
@@ -791,7 +812,7 @@
             lastFrameTime = performance.now();
 
             let moleTimer = 0;
-            const moleInterval = 500; // Maulwurf alle 500ms
+            const moleInterval = 1000; // Maulwurf alle 1000ms (1 Sekunde)
 
             function gameLoop(currentTime) {
                 if (!whackGameActive) {
