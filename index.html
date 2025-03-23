@@ -608,6 +608,9 @@
                 showTab('quiz');
                 console.log("Loaded saved nickname:", nickname);
             }
+
+            // Bereinigung der Leaderboard-Daten
+            removeDuplicates();
         });
 
         let quizScore = 0;
@@ -638,7 +641,14 @@
             optionsElement.innerHTML = "";
             document.getElementById("feedback").style.display = "none";
             document.getElementById("next-btn").style.display = "none";
-            document.getElementById("quiz-container").querySelector(".back-btn").style.display = "block";
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionButton = document.createElement("div");
+                optionButton.classList.add("option");
+                optionButton.textContent = option;
+                optionButton.addEventListener("click", () => checkAnswer(index));
+                optionsElement.appendChild(optionButton);
+            });
         }
 
         function checkAnswer(selectedIndex) {
@@ -854,7 +864,8 @@
             lastFrameTime = performance.now();
 
             let moleTimer = 0;
-            const moleInterval = 1000;
+            let moleInterval = Math.random() * 400 + 300; // Zufälliges Intervall zwischen 300 und 700 ms
+            console.log("Initial mole interval:", moleInterval);
 
             function gameLoop(currentTime) {
                 if (!whackGameActive) {
@@ -879,12 +890,12 @@
                 moleTimer += deltaTime * 1000;
                 if (moleTimer >= moleInterval) {
                     const holes = document.getElementsByClassName("mole-hole");
-                    for (let hole of holes) {
-                        hole.classList.remove("active");
-                    }
+                    for (let hole of holes) hole.classList.remove("active");
                     const randomHole = holes[Math.floor(Math.random() * holes.length)];
                     randomHole.classList.add("active");
                     moleTimer = 0;
+                    moleInterval = Math.random() * 400 + 300; // Neues zufälliges Intervall
+                    console.log("New mole interval:", moleInterval);
                 }
 
                 requestAnimationFrame(gameLoop);
@@ -1155,31 +1166,47 @@
             }
         }
 
-        function saveScore(gameType, gameScore) {
-            const rankings = JSON.parse(localStorage.getItem("rankings")) || [];
-            const existingEntryIndex = rankings.findIndex(entry => entry.nickname === nickname && entry.gameType === gameType);
+        function removeDuplicates() {
+            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            const map = new Map();
 
-            if (existingEntryIndex !== -1) {
-                if (gameType === "memory") {
-                    if (gameScore < rankings[existingEntryIndex].score) {
-                        rankings[existingEntryIndex].score = gameScore;
-                    }
+            rankings.forEach(entry => {
+                const key = `${entry.nickname}-${entry.gameType}`;
+                if (!map.has(key)) {
+                    map.set(key, entry);
                 } else {
-                    if (gameScore > rankings[existingEntryIndex].score) {
-                        rankings[existingEntryIndex].score = gameScore;
+                    const existing = map.get(key);
+                    if (entry.gameType === "memory") {
+                        if (entry.score < existing.score) map.set(key, entry);
+                    } else {
+                        if (entry.score > existing.score) map.set(key, entry);
                     }
                 }
-            } else {
-                rankings.push({ nickname, gameType, score: gameScore });
+            });
+
+            const uniqueRankings = Array.from(map.values());
+            localStorage.setItem("rankings", JSON.stringify(uniqueRankings));
+        }
+
+        function saveScore(gameType, gameScore) {
+            let rankings = JSON.parse(localStorage.getItem("rankings")) || [];
+            const existingEntries = rankings.filter(entry => entry.nickname === nickname && entry.gameType === gameType);
+            let bestScore = gameScore;
+
+            if (existingEntries.length > 0) {
+                if (gameType === "memory") {
+                    bestScore = Math.min(...existingEntries.map(entry => entry.score), gameScore);
+                } else {
+                    bestScore = Math.max(...existingEntries.map(entry => entry.score), gameScore);
+                }
             }
 
+            rankings = rankings.filter(entry => !(entry.nickname === nickname && entry.gameType === gameType));
+            rankings.push({ nickname, gameType, score: bestScore });
+
             rankings.sort((a, b) => {
-                if (a.gameType === "quiz" && b.gameType === "quiz") return b.score - a.score;
                 if (a.gameType === "memory" && b.gameType === "memory") return a.score - b.score;
-                if (a.gameType === "whack-a-mole" && b.gameType === "whack-a-mole") return b.score - a.score;
-                if (a.gameType === "snake" && b.gameType === "snake") return b.score - a.score;
-                if (a.gameType === "flappy-frog" && b.gameType === "flappy-frog") return b.score - a.score;
-                return 0;
+                return b.score - a.score;
             });
 
             localStorage.setItem("rankings", JSON.stringify(rankings));
